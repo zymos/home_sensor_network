@@ -1,0 +1,67 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<!-- Created with Fritzing (http://www.fritzing.org/) -->
+<svg xmlns:svg='http://www.w3.org/2000/svg' xmlns='http://www.w3.org/2000/svg' version='1.2' baseProfile='tiny' x='0in' y='0in' width='1.25394in' height='1.38745in' viewBox='0 0 90.2836 99.8965' >
+<g partID='854289610'><g transform='translate(72,13.973)' ><g transform='matrix(-1,0,0,1,0,0)'  ><g id="schematic">
+<rect stroke-linejoin="round" width="42.75" fill="none" x="14.4" stroke-width="0.9" height="43.2" stroke-linecap="round" y="14.4" stroke="#000000"/>
+<text id="label" fill="#000000" x="36" text-anchor="middle" font-size="3.5" font-family="'Droid Sans'" y="29" stroke="none">Soil</text>
+<text id="label" fill="#000000" x="36" text-anchor="middle" font-size="3.5" font-family="'Droid Sans'" y="32.5" stroke="none">Moisture</text>
+<text id="label" fill="#000000" x="36" text-anchor="middle" font-size="3.5" font-family="'Droid Sans'" y="36" stroke="none">Sensor</text>
+<line stroke-linejoin="round" fill="none" x1="0.349999" y2="28.8" stroke-width="0.699998" y1="28.8" x2="14.4" stroke-linecap="round" stroke="#787878"/>
+<rect connectorName="SIG" width="14.4" id="connector4pin" fill="none" x="0" stroke-width="0" height="0.699998" y="28.45"/>
+<g width="0" id="connector4terminal" fill="none" x="0" stroke-width="0" height="0.699998" y="28.45"/>
+<text id="label4" fill="#8c8c8c" x="15.8" text-anchor="start" font-size="3.5" font-family="'Droid Sans'" y="29.5" stroke="none">SIG</text>
+<line stroke-linejoin="round" fill="none" x1="36" y2="14.4" stroke-width="0.699998" y1="0.349999" x2="36" stroke-linecap="round" stroke="#787878"/>
+<rect connectorname="VCC" width="0.699998" id="connector2pin" fill="none" x="35.65" stroke-width="0" height="14.4" y="0"/>
+<g width="0.699998" id="connector2terminal" fill="none" x="35.65" stroke-width="0" height="0" y="0"/>
+<g transform="matrix(1, 0, 0, 1, 37.4, 16)">
+<g>
+<g transform="rotate(270)">
+<g>
+<text id="label2" fill="#8c8c8c" x="0" text-anchor="end" font-size="3.5" font-family="'Droid Sans'" y="0" stroke="none">VCC</text>
+</g>
+</g>
+</g>
+</g>
+<line stroke-linejoin="round" fill="none" x1="36" y2="71.65" stroke-width="0.699998" y1="57.6" x2="36" stroke-linecap="round" stroke="#787878"/>
+<rect connectorname="GND" width="0.699998" id="connector3pin" fill="none" x="35.65" stroke-width="0" height="14.4" y="57.6"/>
+<g width="0.699998" id="connector3terminal" fill="none" x="35.65" stroke-width="0" height="0" y="72"/>
+<g transform="matrix(1, 0, 0, 1, 37.4, 56)">
+<g>
+<g transform="rotate(270)">
+<g>
+<text id="label3" fill="#8c8c8c" x="0" text-anchor="start" font-size="3.5" font-family="'Droid Sans'" y="0" stroke="none">GND</text>
+</g>
+</g>
+</g>
+</g>
+<rect connectorname="VCC" width="0.699998" id="connector7pin" fill="none" x="35.65" stroke-width="0" height="14.4" y="0"/>
+<g width="0.699998" id="connector7terminal" fill="none" x="35.65" stroke-width="0" height="0" y="0"/>
+<rect connectorname="GND" width="0.699998" id="connector6pin" fill="none" x="35.65" stroke-width="0" height="14.4" y="57.6"/>
+<g width="0.699998" id="connector6terminal" fill="none" x="35.65" stroke-width="0" height="0" y="72"/>
+<rect connectorName="SIG" width="14.4" id="connector5pin" fill="none" x="0" stroke-width="0" height="0.699998" y="28.45"/>
+<g width="0" id="connector5terminal" fill="none" x="0" stroke-width="0" height="0.699998" y="28.45"/>
+</g>
+</g></g></g><g partID='854232580'><g transform='translate(28.8185,0)' ><g id="schematic">
+<line stroke-miterlimit="10" id="connector0pin" fill="none" x1="7.2" y2="13.98" stroke-width="0.75" y1="6.78" x2="7.2" stroke-linecap="round" stroke="#787878"/>
+<g id="connector0terminal" fill="none" points="6.817,13.567,7.546,13.546,7.546,14.4,6.859,14.359"/>
+<path fill="none" d="M0.45,6.564l13.5,0" stroke-width="0.9" stroke-linecap="round" stroke="#000000"/>
+<g transform="matrix(1, 0, 0, 1, 1.4985, 4.9878)">
+<text id="label" font-size="4.4991" font-family="'DroidSans'">5V</text>
+</g>
+</g>
+</g></g><g partID='854232610'><g transform='translate(28.7995,85.4965)' ><g id="schematic" xmlns="http://www.w3.org/2000/svg">
+<path id="connector0pin" fill="none" d="M7.201,7.575l0,-7.2" xmlns="http://www.w3.org/2000/svg" stroke-width="0.75" stroke-linecap="round" stroke="#787878"/>
+<g width="0.945" id="connector0terminal" fill="none" xmlns="http://www.w3.org/2000/svg" x="6.728" height="0.953" y="0"/>
+<path id="path4098" fill="none" d="M0.5,7.711L13.9,7.711" xmlns="http://www.w3.org/2000/svg" stroke-width="0.9" stroke-linecap="round" stroke="#000000"/>
+<path id="path4100" fill="none" d="M2.732,10.456l8.935,0" xmlns="http://www.w3.org/2000/svg" stroke-width="0.9" stroke-linecap="round" stroke="#000000"/>
+<path id="path4102" fill="none" d="M9.431,13.175L4.967,13.175" xmlns="http://www.w3.org/2000/svg" stroke-width="0.9" stroke-linecap="round" stroke="#000000"/>
+</g>
+</g></g><g partID='854343070'><g transform='translate(90.2836,39.1694)' ><g transform='matrix(-1,0,0,1,0,0)'  ><g id="schematic" xmlns="http://www.w3.org/2000/svg">
+<rect width="3.6" id="connector0pin" fill="none" xmlns="http://www.w3.org/2000/svg" x="7.47281" stroke-width="0" height="7.2" y="0" stroke="none"/>
+<g width="0.0072" id="connector0terminal" fill="none" xmlns="http://www.w3.org/2000/svg" x="11.08" stroke-width="0" height="0.0072" y="3.6" stroke="none"/>
+<polygon fill="white" xmlns="http://www.w3.org/2000/svg" points="10.96,3.6,7.48001,0.12,0.12,0.12,0.12,7.08,7.48001,7.08" stroke-width="0.24" stroke="#000000"/>
+</g>
+</g></g></g><g partID='854343071'><g transform='translate(79.2036,39.1694)' ><g xmlns="http://www.w3.org/2000/svg" id="schematicText">
+ <text xmlns="http://www.w3.org/2000/svg" id="label" fill="#000000" x="0.48" font-size="4.8" font-family="Droid Sans" y="5.28">soil</text>
+</g>
+</g></g><g partID='854289640'><line stroke-linecap='round' stroke='#404040' x1='36' y1='85.973' x2='36' y2='85.973' stroke-width='0.699998' /></g><g partID='854289670'><line stroke-linecap='round' stroke='#404040' x1='36' y1='13.973' x2='36' y2='13.973' stroke-width='0.699998' /></g><g partID='854343100'><line stroke-linecap='round' stroke='#404040' x1='72' y1='42.773' x2='79.2' y2='42.773' stroke-width='0.699998' /></g><g partID='854289610' id='partLabel'><g transform='translate(43.4603,20.6843)' ><g font-size='5' font-style='normal' font-weight='normal' fill='#000000' font-family="'DroidSans'" id='schematicLabel' fill-opacity='1' stroke='none' ><text x='0' y='3.75'>Sensor</text></g></g></g></svg>

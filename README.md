@@ -70,6 +70,8 @@ Each address designats a location and assigns the sensors funtion.  This way a c
   * RFM69HW
   * Vcc=3.3V
   * Pins
+  * www.hoperf.com/upload/rf/RFM69HW-V1.3.pdf
+  * https://learn.sparkfun.com/tutorials/rfm69hcw-hookup-guide
   * https://github.com/LowPowerLab/RFM69
   * https://github.com/sparkfun/RFM69HCW_Breakout/
 
@@ -94,6 +96,36 @@ Each address designats a location and assigns the sensors funtion.  This way a c
 * Pins
 
 
+# Sensor I/O
+|Pin			|Type			|Type											|
+|---------------|---------------|-----------------------------------------------|
+|Debug(Rx)		|digital(i)		|
+|Debug(Tx)		|digital(o)		|
+|RF(0)			|				|Requires 3.3V level converter					|
+|RF(s)			|				|Requires 3.3V level converter					|
+|RF(i)			|				|Requires 3.3V level converter					|
+|RF(c)			|				|Requires 3.3V level converter					|
+|RF(o)			|				|Requires 3.3V level converter					|
+|PIR(0)			|digital(i)		|All PIRs are in parallel and take only one pin	|
+|PIR(1)			|digital(i)		|All PIRs are in parallel and take only one pin	|
+|PIR(2)			|digital(i)		|All PIRs are in parallel and take only one pin	|
+|PIR(3)			|digital(i)		|All PIRs are in parallel and take only one pin	|
+|Temp/Hum		|digital(i/o)	|
+|Address(0)		|digital(i)		|
+|Address(1)		|digital(i)		|
+|Address(2)		|digital(i)		|
+|Address(3)		|digital(i)		|
+|Relay(0)		|digital(o)		|
+|Relay(1)		|digital(o)		|
+|Relay(2)		|digital(o)		|
+|Relay(3)		|digital(o)		|
+|Light			|analog(i)		|
+|Soil Moisture	|analog(i)		|
+|Water level	|analog(i)		|
+|Switch(0)		|digital(i)		|
+|Switch(1)		|digital(i)		|
+
+Shift Reg - 74HC595
 
 # Arduino MiniPro
 ## Pinout
@@ -122,14 +154,14 @@ Each address designats a location and assigns the sensors funtion.  This way a c
 |        |       	|   OSC2| PB7|  8 |XTAL2|[INACCESSIBLE] |xxxx	| xxxx		|
 |        |       	|   ARef|    | 20|		|[INACCESSIBLE] |xxxx	| xxxx		|
 |     GND|       	|    GND|    | 21|		|			| xxxx		| xxxx		|
-|      A6|       	|       |    | 22| ADC6	|			| Relay(1)	| Digital(o)|
-|      A7|       	|       |    | 19| ADC7	|			| Relay(2)	| Digital(o)|
-|  14(A0)| PCINT8	|       | PC0| 23| ADC0	|			| Light		| Analog In	|
-|  15(A1)| PCINT9	|       | PC1| 24| ADC1	|			| Water		| Analog In	|
+|      A6|       	|       |    | 22| ADC6	|			| Light 	| Analog(i) |
+|      A7|       	|       |    | 19| ADC7	|			| Water 	| Analog(i) |
+|  14(A0)| PCINT8	|       | PC0| 23| ADC0	|			| Relay(1)	| Digital(o)|
+|  15(A1)| PCINT9	|       | PC1| 24| ADC1	|			| Relay(2)	| Digital(o)|
 |  16(A2)| PCINT10	|      	| PC2| 25| ADC2	|			| Soil		| Analog In	|
 |  17(A3)| PCINT11	|      	| PC3| 26| ADC3	|			| Relay(3)	| Digital(o)|
-|      A4| PCINT12	|      	| PC4| 27| ADC4	| SCL		| Switch 1	| Digital(i)|
-|      A5| PCINT13	|      	| PC5| 28| ADC5	| SDA		| Switch 2	| Digital(i)|
+|      A4| PCINT12	|      	| PC4| 27| ADC4	| SCL		| Switch 0	| Digital(i)|
+|      A5| PCINT13	|      	| PC5| 28| ADC5	| SDA		| Switch 1	| Digital(i)|
 |        | PCINT14	|      	| PC6| 29|RESET	| DTR		| Reset		| xxxx		|
 
 * https://blog.adafruit.com/wp-content/uploads/2016/07/promini_final.png
@@ -222,6 +254,12 @@ Each address designats a location and assigns the sensors funtion.  This way a c
 * Relays
   * Light
   * Fan
+
+### Main Bedroom's Bed
+* Location: main bathroom's bed
+* Node address: 6
+* Sensors
+  * Temperature
 
 ### Kitchen
 * Location: Kitchen
