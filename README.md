@@ -12,6 +12,7 @@ this is a sensor network for home automations and sensor data logging
   * pins
   * http://www.learningaboutelectronics.com/Articles/Arduino-liquid-level-sensor-circuit.php
 * Light sensor
+![alt text](https://github.com/zymos/home_sensor_network/raw/master/schematics/light_sensor_schem.jpg "Light sensor")
   * Photoresistor + resistor voltage divider
     * Output: analog
 	* pins
@@ -19,26 +20,33 @@ this is a sensor network for home automations and sensor data logging
     * Output: analog
 	* pins
 * Temperature sensor
+![alt text](https://github.com/zymos/home_sensor_network/raw/master/schematics/temperature_sensor-DS18B20_schem.jpg "Temp sensor")
   * DS18B20
   * Vcc=5V (3.0-5.5V)
   * Output: digital 1-Wire
   * pins
   * https://www.sparkfun.com/products/245
 * Temperature/Humidity sensor
+![alt text](https://github.com/zymos/home_sensor_network/raw/master/schematics/temperature_humidity_sensor-DHT22_schem.jpgl "Temperature/Humidity sensor")
   * DHT22/AM2302
   * Vcc=5V (3.3-6V)
   * Output: digital 1-Wire
   * pins
   * https://www.sparkfun.com/datasheets/Sensors/Temperature/DHT22.pdf
 * Motion sensor (PIR)
+![alt text](https://github.com/zymos/home_sensor_network/raw/master/schematics/PIR_360_degrees_sensor_schem.jpg "PIR")
   * HC-SR501
   * Vcc=5V (4.8-20V)
   * Output: Digital (3.3V)
   * pins
 * Hygrometer - Soil moisture sensor
+![alt text](https://github.com/zymos/home_sensor_network/raw/master/schematics/soil_moisture_sensor_schem.jpg "Hygrometer")
   * Vcc=5V (3-5V)
   * Output: analog
   * pins
+* Bed occupancy sensor
+	* -
+	* https://www.openhardware.io/view/65/Bed-Occupancy-Sensor
 
 # Relays
 * 4-bit output
@@ -46,6 +54,7 @@ this is a sensor network for home automations and sensor data logging
 ## Light control function
 * Single relay for on/off
 ## Fan control function
+![alt text](https://github.com/zymos/home_sensor_network/raw/master/schematics/relay_array-ceilling_fan_schem.jpg "Ceiling fan")
 * Three relays for low/med/high or fan1/fan2/fan3
 ## Animal/Pest control function
 ### flashing lights
@@ -65,7 +74,8 @@ Each address designats a location and assigns the sensors funtion.  This way a c
 
 
 # RF
-  
+![alt text](https://github.com/zymos/home_sensor_network/raw/master/schematics/RFM69-radio_schem.jpg "RF")
+
 * Transeiver
   * RFM69HW
   * Vcc=3.3V
@@ -127,7 +137,11 @@ Each address designats a location and assigns the sensors funtion.  This way a c
 
 Shift Reg - 74HC595
 
+
+
 # Arduino MiniPro
+![alt text](https://github.com/zymos/home_sensor_network/raw/master/schematics/MCU-arduino_pro_mini_schem.jpg "MCU")
+
 ## Pinout
 |Board #|PinChangeInt|Def|Bus #|Pin #|Notes 1|Notes 2|Sensor Assign|Assign		|
 |-------|-----------|-------|----|----|-----|-------|-------------|-------------|
@@ -165,6 +179,9 @@ Shift Reg - 74HC595
 |        | PCINT14	|      	| PC6| 29|RESET	| DTR		| Reset		| xxxx		|
 
 * https://blog.adafruit.com/wp-content/uploads/2016/07/promini_final.png
+
+# 3.3V Regulator
+![alt text](https://github.com/zymos/home_sensor_network/raw/master/schematics/3.3V-Regulator_schem.jpg "3.3V LDO")
 
 
 # Sensors
