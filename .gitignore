@@ -1,0 +1,4 @@
+datasheets/
+*.o
+*.bin
+*.hex
