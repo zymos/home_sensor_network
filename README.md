@@ -63,6 +63,13 @@ this is a sensor network for home automations and sensor data logging
 * Single relay for on/off
 
 
+# Alarm
+* 390-0004-Z
+** Piezo Buzzer, 150Ohm
+** from a UPS
+** http:// www.e-gizmo.com/PRODUCT/pdf/buzzers%20and%20speakers.pdf
+
+
 # Node Address
 Each address designats a location and assigns the sensors funtion.  This way a common code can be used in all sensors, with differing funtions based on address.
 * 4-bit (16 locations)

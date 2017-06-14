@@ -2,3 +2,7 @@ datasheets/
 *.o
 *.bin
 *.hex
+.pioenvs
+.piolibdeps
+.clang_complete
+.gcc-flags.json

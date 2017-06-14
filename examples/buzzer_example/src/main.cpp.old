@@ -1,0 +1,42 @@
+#include <Arduino.h>
+
+const int alarm_pin=10; //alarm buzzer
+unsigned long buzzer_delay=1; //milliseconds
+
+void beep(void){
+  uint8_t buzzer_delay=1; //milliseconds
+  uint16_t beep_delay=500; //milliseconds
+
+  for(int i=0;i<10;i++){ //beeps
+    for(int i=0;i<1000;i++){ //frequency
+      digitalWrite(alarm_pin, HIGH); // LED on 1
+      delay(buzzer_delay);
+      digitalWrite(alarm_pin, LOW); // LED off
+      delay(buzzer_delay);
+    }
+    delay(beep_delay);
+  }
+}
+
+
+void setup(void)
+{
+  //DEBUG
+
+  pinMode(alarm_pin, OUTPUT); //pin for buzzer
+
+
+}
+
+
+/////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////
+//// LOOP forever
+/////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////
+void loop(void){
+
+
+  beep();
+  delay(10000);
+}

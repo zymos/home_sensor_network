@@ -1,0 +1,72 @@
+// Include the libraries we need
+#include <Arduino.h>
+#include <OneWire.h>
+#include <DallasTemperature.h>
+
+
+
+
+//////////////////////////////////////////////////////////////////////////
+// Configuration
+//////////////////////////////////////////////////////////////////////////
+
+const uint8_t DEBUG=1; // Debug sends serial-port output
+// pins
+#define ONE_WIRE_BUS 4 // pin for DS18B20 temperatire sensor
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////
+// Variables
+////////////////////////////////////////////////////////////////////////
+float temperature;
+
+////////////////////////////////////////////////////////////////////////
+// Load stuff
+////////////////////////////////////////////////////////////////////////
+// Load DS18B20 temperature stuff
+OneWire oneWire(ONE_WIRE_BUS);
+DallasTemperature sensors(&oneWire);// Load DS18B20 temperature stuff
+
+
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+//// Functions
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+void DS18B20_sensor(){
+  if (DEBUG){
+    Serial.println("Requesting temperatures...");
+  }
+  sensors.requestTemperatures();
+  temperature = sensors.getTempCByIndex(0);
+  if(DEBUG){
+    Serial.print("Temperature is: ");
+    Serial.println(temperature);
+  }
+}
+
+void setup(void)
+{
+  // start serial port
+  Serial.begin(9600);
+  Serial.println("Dallas Temperature IC Control Library Demo");
+
+  // Load DS18B20 temperature sensor
+  sensors.begin();
+}
+
+/*
+ * Main function, get and show the temperature
+ */
+void loop(void)
+{
+  // call sensors.requestTemperatures() to issue a global temperature
+  // request to all devices on the bus
+  DS18B20_sensor();
+  delay(2000);
+}
