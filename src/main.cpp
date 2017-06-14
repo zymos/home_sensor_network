@@ -42,7 +42,10 @@ const uint8_t water_level_pin= A0;
 const uint8_t buzzer_pin = 10;
 
 // Temperature sensor (DS18B20)
-#define ONE_WIRE_BUS 4 // pin for DS18B20 temperature sensor
+#define ONE_WIRE_BUS 4
+
+// Temperature & Humidity sensor (DHT22)
+#define DHT_pin 4
 
 // Flasher
 const uint8_t flasher_pin= 3;
@@ -71,13 +74,14 @@ const uint8_t light_relay_pin = 9;
 uint8_t count;
 uint8_t address;
 uint16_t functions;
-uint16_t temperature;
+float temperature;
 uint8_t relays;
 uint8_t fan;
 uint8_t light;
 uint8_t liquid_level;
 uint8_t alarm_status;
-
+float humidity;
+dht DHT;
 
 ////////////////////////////////////////////////////////////////////////
 // Initalize
@@ -95,14 +99,15 @@ DeviceAddress ThermometerAddress;
 ////////////////////////////////////////////////////////////////////////
 void aquire_address(void);
 
-
-void DS18B20_sensor(void);    // Temperature sensor
 void activate_ceiling_fan(uint8_t fan, uint8_t light);  // Ceiling fan
 void activate_relays(uint8_t relays); // Relays
-void flasher(void);     // LED Flasher
-uint8_t alarm(void);    // Buzzer alarm
+void activate_flasher(void);        // LED Flasher
+uint8_t activate_alarm(void);       // Buzzer alarm
+
 uint8_t detect_water_level(void);   // Water level
-void motion_detected(void);       //PIR
+void detect_motion(void);   //PIR
+void detect_DS18B20(void);  // DS18B20 Temperature sensor
+void detect_DHT22(void);    //DHT22 Temperature & Humidity
 
 // Initializations
 void init_PIR(void);
@@ -123,13 +128,62 @@ void init_buzzer(void);
 ////////////////////////////////////////////////////////////////////////
 
 
-void motion_detected(void) {
+
+////////////////////////////////////////////
+// Detection functions
+////////////////////////////////////////////
+
+void detect_DHT22(void){
+  // DHT22 sensor
+  // measures Temperature & Humidity
+  int chk = DHT.read22(DHT_pin);
+
+  if(chk == DHTLIB_OK){ // detection successful
+    humidity = (float)DHT.humidity;
+    temperature = (float)DHT.temperature;
+  }else{ //detection failed
+    humidity = -1000;
+    temperature = -1000;
+  }
+
+  if(DEBUG){
+      switch (chk){
+      case DHTLIB_OK:
+          Serial.print("DHT22 humidity: ");
+          Serial.print(humidity, 1);
+          Serial.print("\% \nDHT22 temperature: ");
+          Serial.print(temperature, 1);
+          Serial.println("C");
+          break;
+      case DHTLIB_ERROR_CHECKSUM:
+          Serial.print("DHT22: Checksum error,\n");
+          break;
+      case DHTLIB_ERROR_TIMEOUT:
+          Serial.print("DHT22: Time out error,\n");
+          break;
+      case DHTLIB_ERROR_CONNECT:
+          Serial.print("DHT22: Connect error,\n");
+          break;
+      case DHTLIB_ERROR_ACK_L:
+          Serial.print("DHT22: Ack Low error,\n");
+          break;
+      case DHTLIB_ERROR_ACK_H:
+          Serial.print("DHT22: Ack High error,\n");
+          break;
+      default:
+          Serial.print("DHT22: Unknown error,\n");
+          break;
+      }
+    }
+}
+
+
+void detect_motion(void) {
   //state = !state;
   while(digitalRead(PIR_pin) == HIGH){
     if (DEBUG) { Serial.println("Motion detected"); }
 
     // transmit motion notification
-
 
     delay(sleep_time); // recheck motion
 
@@ -138,7 +192,37 @@ void motion_detected(void) {
 }
 
 
-void flasher(void){
+uint8_t detect_water_level(void){ // use water level sensor
+  liquid_level = (analogRead(water_level_pin) >> 2); //remove LSB to make 8-bit
+  if (DEBUG){
+    Serial.print("Liquid level: ");
+    Serial.println(liquid_level);//prints out liquid level sensor reading
+  }
+  return liquid_level;
+}
+
+
+void detect_DS18B20(void){
+  if (DEBUG){
+    Serial.println("Requesting temperatures...");
+  }
+  sensors.requestTemperatures();
+  temperature = sensors.getTemp(ThermometerAddress);
+  if(DEBUG){
+    Serial.print("Temperature is: ");
+    Serial.print(temperature);
+    Serial.print("(Raw): ");
+    Serial.print(temperature/128);
+    Serial.println("C");
+  }
+}
+
+
+////////////////////////////////////////////////
+// Activation functions
+////////////////////////////////////////////////
+
+void activate_flasher(void){
   uint16_t led_on_time=100;
   uint16_t led_off_time=100;
   uint16_t led_settle_time=1000;
@@ -156,7 +240,7 @@ void flasher(void){
 }
 
 
-uint8_t alarm(void){ // Activate alarm
+uint8_t activate_alarm(void){ // Activate alarm
   uint8_t beep_count=10;
   uint16_t beep_period=3000;
   uint16_t beep_durration=2000;
@@ -174,15 +258,6 @@ uint8_t alarm(void){ // Activate alarm
   }
 }
 
-
-uint8_t detect_water_level(void){ // use water level sensor
-  liquid_level = (analogRead(water_level_pin) >> 2); //remove LSB to make 8-bit
-  if (DEBUG){
-    Serial.print("Liquid level: ");
-    Serial.println(liquid_level);//prints out liquid level sensor reading
-  }
-  return liquid_level;
-}
 
 
 void activate_ceiling_fan(uint8_t fan, uint8_t light){
@@ -263,21 +338,9 @@ void activate_relays(uint8_t relays){
 }
 
 
-void DS18B20_sensor(void){
-  if (DEBUG){
-    Serial.println("Requesting temperatures...");
-  }
-  sensors.requestTemperatures();
-  temperature = sensors.getTemp(ThermometerAddress);
-  if(DEBUG){
-    Serial.print("Temperature is: ");
-    Serial.print(temperature);
-    Serial.print("(Raw): ");
-    Serial.print(temperature/128);
-    Serial.println("C");
-  }
-}
-
+/////////////////////////////////////////////
+// Other functions
+/////////////////////////////////////////////
 
 void aquire_address(void){
   address = 0xff;
@@ -406,12 +469,9 @@ void load_function_essentials(void){
 	}
 	if(functions & 0x0001){
 		// Temperature (DS18B20)
-
-    sensors.begin();
-    sensors.getAddress(ThermometerAddress, 0);
 	}
-
 }
+
 
 void assign_functions(void){
   // Posible Functions
@@ -442,6 +502,10 @@ void assign_functions(void){
   if(DEBUG){display_functions();};
 }
 
+
+////////////////////////////////////////////////
+// Initalize functions
+////////////////////////////////////////////////
 
 void init_PIR(void) {
   // PIR input
@@ -479,6 +543,8 @@ void init_flasher(void){
 
 void init_DS18B20(void){
   // pins
+  sensors.begin();
+  sensors.getAddress(ThermometerAddress, 0);
 }
 
 void init_DHT22(void){
