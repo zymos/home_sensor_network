@@ -6,7 +6,6 @@ this is a sensor network for home automations and sensor data logging
 
 
 
----------------------------------------------
 |Node ID |Location					|Abbreviation	|	
 ---------------------------------------------
 | 0x00	| Crawl Space Front			| CSF	|
@@ -26,7 +25,7 @@ this is a sensor network for home automations and sensor data logging
 | 0x0E	| Side Walk					| SW	|
 | 0x0F	| Garden					| Gard	|
 
------------------------------------------
+
 |Peripheral ID|Function		| Notes		|
 -----------------------------------------
 | 0x00		| Temperature	|DS18B20	|
