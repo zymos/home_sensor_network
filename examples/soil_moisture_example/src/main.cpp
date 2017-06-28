@@ -7,7 +7,7 @@
 
 
 #include "Arduino.h"
-
+#include "wiring_analog.c"
 
 //#include <Narcoleptic.h> //low-power sleep
 
@@ -23,10 +23,8 @@ const uint8_t DEBUG=1; // Debug sends serial-port output
 
 
 // Pin Assignment
-const uint8_t address0_pin = 8;
-const uint8_t address1_pin = 7;
-const uint8_t address2_pin = 6;
-const uint8_t address3_pin = 5;
+const uint8_t soil_moisture_pin = A2;
+
 
 
 
@@ -34,8 +32,8 @@ const uint8_t address3_pin = 5;
 // Variables
 ////////////////////////////////////////////////////////////////////////
 uint8_t count;
-uint8_t address;
-
+uint8_t relays;
+uint8_t soil_moisture;
 
 
 
@@ -44,27 +42,18 @@ uint8_t address;
 //// Functions
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
+// read adc value
 
-uint8_t aquire_address(void){
-  address = 0xff;
-  address |= digitalRead(address3_pin); // reads into first digit
-  address <<= 1; // shifts
-  address |= digitalRead(address2_pin); // reads into first digit
-  address <<= 1;// shifts
-  address |= digitalRead(address1_pin);// reads into first digit
-  address <<= 1;  // shifts
-  address |= digitalRead(address0_pin);// reads into first digit
-  address = ~address; // Pull up resistors mean inverted
-  if (DEBUG){
-    Serial.print("Address(bin) is: ");
-    Serial.print(not(digitalRead(address3_pin)));
-    Serial.print(not(digitalRead(address2_pin)));
-    Serial.print(not(digitalRead(address1_pin)));
-    Serial.println(not(digitalRead(address0_pin)));
-    Serial.print("Address is: ");
-    Serial.println(address);
+
+void detect_soil_moisture(void){
+  // Measure soil moisture Level
+  soil_moisture = 255 - (analogRead(soil_moisture_pin) >> 2);
+  //remove LSB to make 8-bit and invert
+
+  if(DEBUG){
+    Serial.print("Soil Moisture: ");
+    Serial.println(soil_moisture);
   }
-  return address;
 }
 
 
@@ -83,10 +72,7 @@ void setup(void)
     count = 0;
   }
 
-  pinMode(address0_pin, INPUT_PULLUP);
-  pinMode(address1_pin, INPUT_PULLUP);
-  pinMode(address2_pin, INPUT_PULLUP);
-  pinMode(address3_pin, INPUT_PULLUP);
+
 }
 
 
@@ -103,8 +89,6 @@ void loop(void){
     Serial.println(count);
     count++;
   }
-
-  aquire_address();
-
-  delay(1000);//delays 100ms
+  detect_soil_moisture();
+  delay(1000);
 }

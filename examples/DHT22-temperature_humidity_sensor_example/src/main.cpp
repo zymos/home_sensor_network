@@ -24,8 +24,8 @@ uint8_t DEBUG=1;
 /////////////////////////////////////////
 //  Variables
 /////////////////////////////////////////
-float temperature;
-float humidity;
+int8_t temperature;
+int8_t humidity;
 dht DHT;
 
 
@@ -41,11 +41,11 @@ void detect_DHT22(void){
   int chk = DHT.read22(DHT_pin);
 
   if(chk == DHTLIB_OK){ // detection successful
-    humidity = (float)DHT.humidity;
-    temperature = (float)DHT.temperature;
+    humidity = (int8_t)DHT.humidity;
+    temperature = (int8_t)DHT.temperature;
   }else{ //detection failed
-    humidity = -1000;
-    temperature = -1000;
+    humidity = -127;
+    temperature = -127;
   }
 
   if(DEBUG){
@@ -77,7 +77,6 @@ void detect_DHT22(void){
           break;
       }
     }
-
 }
 
 
