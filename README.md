@@ -7,7 +7,7 @@ this is a sensor network for home automations and sensor data logging
 
 
 |Node ID |Location					|Abbreviation	|	
----------------------------------------------
+|-------|---------------------------|-------|
 | 0x00	| Crawl Space Front			| CSF	|
 | 0x01	| Crawl Space Back			| CSB	|
 | 0x02	| Main Bedroom Light Switch	| MBLS	|
@@ -27,7 +27,7 @@ this is a sensor network for home automations and sensor data logging
 
 
 |Peripheral ID|Function		| Notes		|
------------------------------------------
+|-----------|---------------|-----------|
 | 0x00		| Temperature	|DS18B20	|
 | 0x01		| Temperature&Humidity	|DHT22	|
 | 0x02		| Motion		| PIR		|
@@ -36,7 +36,6 @@ this is a sensor network for home automations and sensor data logging
 | 0x05		| Soil Moisture	|
 | 0x06		| Bed Ocupancy	|
 | 0x07		|				|
----------------------------------------
 | 0x10		| Lamp			|
 | 0x11		| Fan Low		|
 | 0x12		| Fan Med		|
@@ -45,7 +44,6 @@ this is a sensor network for home automations and sensor data logging
 | 0x15		| Ultrasonic	|
 | 0x16		| Buzzer	|
 | 0x17		|			|
----------------------------------------
 | 0x20		| Relay 0	|
 | 0x21		| Relay 1	|
 | 0x22		| Relay 2	|
