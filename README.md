@@ -3,7 +3,122 @@ this is a sensor network for home automations and sensor data logging
 
 ![alt text](https://github.com/zymos/home_sensor_network/raw/master/docs/images/basic_layout.gif "Block diagram")
 
-# Sensor
+
+
+
+---------------------------------------------
+|Node ID |Location					|Abbreviation	|	
+---------------------------------------------
+| 0x00	| Crawl Space Front			| CSF	|
+| 0x01	| Crawl Space Back			| CSB	|
+| 0x02	| Main Bedroom Light Switch	| MBLS	|
+| 0x03	| Main Bedroom Ceiling Fan	| MBCF	|
+| 0x04	| Main Bedroom Window		| MBW	|
+| 0x05	| Computer Room Window		| CRW	|
+| 0x06	| Computer Room Light Switch| CRLS	|
+| 0x07	| Computer Room Ceiling Fan	| CRCF	|
+| 0x08	| Main Bathroom				| Bath	|
+| 0x09	| Kitchen					| Kit	|
+| 0x0A	| Living Room				| LR	|
+| 0x0B	| Washing Room				| WR	|
+| 0x0C	| Front Yard				| FY	|
+| 0x0D	| Back Yard					| BY	|
+| 0x0E	| Side Walk					| SW	|
+| 0x0F	| Garden					| Gard	|
+
+-----------------------------------------
+|Peripheral ID|Function		| Notes		|
+-----------------------------------------
+| 0x00		| Temperature	|DS18B20	|
+| 0x01		| Temperature&Humidity	|DHT22	|
+| 0x02		| Motion		| PIR		|
+| 0x03		| Light Level	|
+| 0x04		| Water Level	|
+| 0x05		| Soil Moisture	|
+| 0x06		| Bed Ocupancy	|
+| 0x07		|				|
+---------------------------------------
+| 0x10		| Lamp			|
+| 0x11		| Fan Low		|
+| 0x12		| Fan Med		|
+| 0x13		| Fan High		|
+| 0x14		| Flasher		|
+| 0x15		| Ultrasonic	|
+| 0x16		| Buzzer	|
+| 0x17		|			|
+---------------------------------------
+| 0x20		| Relay 0	|
+| 0x21		| Relay 1	|
+| 0x22		| Relay 2	|
+| 0x23		| Relay 3	|
+| 0x24		|			|
+| 0x30		| Switch 0	|
+| 0x31		| Switch 1	|
+| 0x32		| Switch 2	|
+| 0x33		| Switch 3	|
+| 0x34		|			|
+| 0x40		| LED 0		|
+| 0x41		| LED 1		|
+| 0x42		| LED 2		|
+| 0x43		| LED 3		|
+| 0x44		| LED 4		|
+| 0x45		| LED 5		|
+| 0x46		| 			|
+
+
+# Inputs
+|Location	|Address	|Bed	|Soil	|W	|RFrx	|L	|TH		|T	|SWL	|SWF	| SW0	| SW1	|
+|-----------|-----------|-------|-------|---|-------|---|-------|---|-------|-------|-------|-------|
+| FCS		| 0			| X		| 1		| X	| X		| X	| 1		| x	| x		| x		| x		| x		|
+| BCS		| 1			| X		| 1		| X	| X		| X	| 1		| x	| x		| x		| x		| x		|
+| MBR CF	| 2			| X		| X		| X	| X		| X	| X		| x	| x		| x		| x		| x		|
+| MBR CP	| 3			| x		| x		| x	| 1		| 1	| x		| 1 | 1		| 1		| 1		| 1		|
+
+
+# Outputs
+|Location	|Address	|F	|U	|CFL |CF1 |CF2 |CF3 |R0	|R1	|R2	|R3	|RFtx |LED0|LED1|LED2|LED3|LED4|
+|-----------|-----------|---|---|----|----|----|----|---|---|---|---|-----|----|----|----|----|----|
+| FCS		| 0			| 1	| 1	| X	 | X  | X  | x  | x	| x	| x	|x	| 1	  | x  | x  | x  | x  | x  |
+| BCS		| 1			| 1	| x	| X	 | X  | X  | x  | x	| x	| x	|x 	| 1   | x  | x  | x  | x  | x  |
+| MBR CF	| 2			| X	| X	| 1	 | 1  | 1  | 1  | x	| x	| x	|x  | 1   | 1  | 1  | 1  | 1  | x  |
+
+* Location abbriviations
+	* _MBR CF = Main Bedroom ceiling fan_
+	* _MBR CP = Main bedroom control panel_
+	* _FCS = Front crawl space_
+	* _BCS = Back crawl space_
+
+* Input abbriviations
+	* _Bed = bed occupency sensor_
+	* _Soil = soil moisture sensor_
+	* _W = Water level sensor_
+	* _RFrx = Radio transiever (Rx)_
+	* _L = Light level_
+	* _TH = Temperature and Humidity sensor, DHT22_
+	* _T = Temperature sensor, DS18B20_
+	* _SWL = Switch light_
+	* _SWF = Switch Fan mode_
+	* _SW0 = Switch 0_
+
+* Outputs abbrivaiations
+	* _F = Flasher_
+	* _U = Ultrasonic_
+	* _CFL = Ceiling fan light_
+	* _CF1 = Ceiling fan low_
+	* _CF2 = Ceiling fan med_
+	* _CF3 = Ceiling fan high_
+	* _R0 = Relay 0_
+	* _R1 = Relay 1_
+	* _R2 = Relay 2_
+	* _R3 = Relay 3_
+	* _RFtx = Radio transmit_
+	* _LED0 = LED light_
+	* _LED1 = LED fan mode, auto_
+	* _LED2 = LED fan mode, low_
+	* _LED3 = LED fan mode, med_
+	* _LED4 = LED fan mode, high_
+
+
 
 * Water level sensor 
   * RB-02S048
@@ -41,6 +156,7 @@ this is a sensor network for home automations and sensor data logging
   * pins
 * Hygrometer - Soil moisture sensor
 ![alt text](https://github.com/zymos/home_sensor_network/raw/master/schematics/soil_moisture_sensor_schem.jpg "Hygrometer")
+  * Sunkee soil hygrometer
   * Vcc=5V (3-5V)
   * Output: analog
   * pins
@@ -127,20 +243,21 @@ Each address designats a location and assigns the sensors funtion.  This way a c
 |PIR(1)			|digital(i)		|All PIRs are in parallel and take only one pin	|
 |PIR(2)			|digital(i)		|All PIRs are in parallel and take only one pin	|
 |PIR(3)			|digital(i)		|All PIRs are in parallel and take only one pin	|
-|Temp/Hum		|digital(i/o)	|
-|Address(0)		|digital(i)		|
-|Address(1)		|digital(i)		|
-|Address(2)		|digital(i)		|
-|Address(3)		|digital(i)		|
-|Relay(0)		|digital(o)		|
+|Temp/Hum		|digital(i/o)	| OneWire interface
+|Address(0)		|digital(i)		| Pull-up
+|Address(1)		|digital(i)		| Pull-up
+|Address(2)		|digital(i)		| Pull-up
+|Address(3)		|digital(i)		| Pull-up
+|Relay(0)		|digital(o)		| 
 |Relay(1)		|digital(o)		|
 |Relay(2)		|digital(o)		|
 |Relay(3)		|digital(o)		|
-|Light			|analog(i)		|
+|Light			|analog(i)		| Value=80-255 of 255
 |Soil Moisture	|analog(i)		|
 |Water level	|analog(i)		|
-|Switch(0)		|digital(i)		|
-|Switch(1)		|digital(i)		|
+|Switch(0)		|digital(i)		| Pull-up
+|Switch(1)		|digital(i)		| Pull-up
+
 
 Shift Reg - 74HC595
 
@@ -185,11 +302,63 @@ Shift Reg - 74HC595
 |      A5| PCINT13	|      	| PC5| 28| ADC5	| SDA		| Switch 1	| Digital(i)|
 |        | PCINT14	|      	| PC6| 29|RESET	| DTR		| Reset		| xxxx		|
 
+| Pin Name | Type	|
+---------------------
+| address0 |	Digital INPUT PULL_UP
+| address1 |	Digital INPUT PULL_UP 
+| address2 |	Digital INPUT PULL_UP
+| address3 |	Digital INPUT PULL_UP
+| PIR			| digital INPUT
+| water_level	| analog INPUT
+| soil_moisture	| analog INPUT
+| buzzer		| Digital INPUT
+| flasher		| Digital INPUT 
+| ultrasonic	| Digital INPUT 
+| switch0 |	Digital INPUT PULL_UP
+| switch1 |	Digital INPUT PULL_UP
+| switch2 |	Digital INPUT PULL_UP
+| switch3 |	Digital INPUT PULL_UP
+| LED0 |	Digital OUPUT
+| LED1 |	Digital OUPUT
+| LED2 |	Digital OUPUT
+| LED3 |	Digital OUPUT
+| LED4 |	Digital OUPUT
+| RFM69_SS | Digital SPI
+| RFM69_SCLK | Digital SPI
+| RFM69_MISO | Digital SPI
+| RFM69_MOSI | Digital SPI
+
+*New assignments
+|Pin #	|Assignments|Notes|
+|-------|-----------|-----|
+|      0|  Debug(Rx)|
+|      1|  Debug(Tx)|
+|      2|  |
+|      3| PIR(motion_detected) |
+|      4| DHT22/DS18B20(temperature/humidity) |
+|      5| Address3		| SW8	|
+|      6| Address2  	| SW4	|
+|      7| Address1 		| SW2	|
+|      8| Address0 		| SW1	|
+|      9|  |
+|      10| |
+|      11| |
+|      12| |
+|      13| |
+|      A6| |
+|      A7| |
+|  14(A0)| Relay0/CF(light_relay)	|
+|  15(A1)| Relay1/CF(fan_relay0) |
+|  16(A2)| Relay2/CF(fan_relay1) |
+|  17(A3)| Relay4/CF(fan_relay2) |
+|      A4| |
+|      A5| |
+
+
 * https://blog.adafruit.com/wp-content/uploads/2016/07/promini_final.png
 
 # 3.3V Regulator
 ![alt text](https://github.com/zymos/home_sensor_network/raw/master/schematics/3.3V-Regulator_schem.jpg "3.3V LDO")
-
 
 # Sensors
 

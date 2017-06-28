@@ -5,11 +5,13 @@
 //  http://www.learningaboutelectronics.com/Articles/Arduino-liquid-level-sensor-circuit.php
 /////////////////////////////////////////////////////////////////////////
 
+#define F_CPU 16000000UL
+
 
 #include "Arduino.h"
 #include <OneWire.h>
 #include <DallasTemperature.h>
-
+#include <dht.h>
 //#include <Narcoleptic.h> //low-power sleep
 
 
@@ -17,9 +19,20 @@
 // Configuration
 //////////////////////////////////////////////////////////////////////////
 
+
 const uint8_t DEBUG=1; // Debug sends serial-port output
 
 const uint16_t sleep_time=1000; //ms
+
+const uint8_t control_temperature_low = 21; // temp for fan in Celcius
+const uint8_t control_temperature_med = 24; // temp for fan in Celcius
+const uint8_t control_temperature_high = 27; // temp for fan in Celcius
+const uint8_t control_temperature_hysteresis = 1; // temp for fan in Celcius
+
+
+
+
+
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -32,11 +45,17 @@ const uint8_t address1_pin = 6;
 const uint8_t address2_pin = 7;
 const uint8_t address3_pin = 8;
 
+
+// Light sensor
+const uint8_t light_pin = A0;
 // PIR
-const int PIR_pin= 2;
+const uint8_t PIR_pin= 3;
 
 // Water Level
 const uint8_t water_level_pin= A0;
+
+// Soil moisture
+const uint8_t soil_moisture_pin = A2;
 
 // Buzzer
 const uint8_t buzzer_pin = 10;
@@ -50,20 +69,31 @@ const uint8_t buzzer_pin = 10;
 // Flasher
 const uint8_t flasher_pin= 3;
 
+// Ultrasonic
+const uint8_t ultrasonic_pin= 3;
+
 // Relays
-const uint8_t relay0_pin = 9;
-const uint8_t relay1_pin = A0;
-const uint8_t relay2_pin = A1;
+const uint8_t relay0_pin = A0;
+const uint8_t relay1_pin = A1;
+const uint8_t relay2_pin = A2;
 const uint8_t relay3_pin = A3;
 
 // Ceiling Fan
-const uint8_t fan_relay0_pin = A0;
-const uint8_t fan_relay1_pin = A1;
-const uint8_t fan_relay2_pin = A3;
-const uint8_t light_relay_pin = 9;
+const uint8_t fan_relay0_pin = A1; // low
+const uint8_t fan_relay1_pin = A2; // med
+const uint8_t fan_relay2_pin = A3; // high
+const uint8_t light_relay_pin = A0; // light
 
+// Switches
+const uint8_t switch_light_pin = 9;
+const uint8_t switch_fan_pin = A0;
 
-
+// LED outputs
+const uint8_t LED0_pin = 9;
+const uint8_t LED1_pin = 9;
+const uint8_t LED2_pin = 9;
+const uint8_t LED3_pin = 9;
+const uint8_t LED4_pin = 9;
 
 
 
@@ -71,17 +101,33 @@ const uint8_t light_relay_pin = 9;
 ////////////////////////////////////////////////////////////////////////
 // Variables
 ////////////////////////////////////////////////////////////////////////
-uint8_t count;
-uint8_t address;
+uint8_t count; // used in DEBUG, to count loops
+uint8_t address; // location 0-15
 uint16_t functions;
-float temperature;
+
+int8_t temperature; // Sensor measurement from DHT22 or DS18B20
+int8_t humidity; // sensor measurement from DHT22
+
 uint8_t relays;
-uint8_t fan;
-uint8_t light;
+uint8_t ceiling_fan_status;
+uint8_t ceiling_light_status;
+uint8_t soil_moisture;
 uint8_t liquid_level;
 uint8_t alarm_status;
-float humidity;
-dht DHT;
+
+
+uint8_t alarm; // buzzer on/off
+
+// PIR motion sensor vars
+uint8_t motion_detected;
+uint8_t motion_count;
+
+// Light level
+uint8_t light_level;
+
+
+
+
 
 ////////////////////////////////////////////////////////////////////////
 // Initalize
@@ -89,7 +135,7 @@ dht DHT;
 OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature sensors(&oneWire);
 DeviceAddress ThermometerAddress;
-
+dht DHT;
 
 
 
@@ -99,27 +145,55 @@ DeviceAddress ThermometerAddress;
 ////////////////////////////////////////////////////////////////////////
 void aquire_address(void);
 
-void activate_ceiling_fan(uint8_t fan, uint8_t light);  // Ceiling fan
-void activate_relays(uint8_t relays); // Relays
-void activate_flasher(void);        // LED Flasher
-uint8_t activate_alarm(void);       // Buzzer alarm
 
-uint8_t detect_water_level(void);   // Water level
-void detect_motion(void);   //PIR
+
+void activate_flasher(void);        // LED Flasher
+void activate_alarm(void);       // Buzzer alarm
+
+
+
+
+// Initializations
+void init_flasher(void);
+void init_buzzer(void);
+
+// Light level
+void detect_light(void);
+
+// Soil moisture
+void init_soil(void);
+void detect_soil_moisture(void);  // Soil moisture
+
+// Water level
+void init_water_level(void);
+void detect_water_level(void);   // Water level
+
+// Relays
+void activate_relays(uint8_t relays); // Relays
+void init_relay(void);
+
+// Ceiling fan
+void init_ceiling_fan(void);
+void activate_ceiling_fan(uint8_t fan, uint8_t light);  // Ceiling fan
+
+// Temperature & Humidity
+void init_DS18B20(void);
+void init_DHT22(void);
 void detect_DS18B20(void);  // DS18B20 Temperature sensor
 void detect_DHT22(void);    //DHT22 Temperature & Humidity
 
-// Initializations
-void init_PIR(void);
-void init_water_level(void);
-void init_light(void);
-void init_soil(void);
-void init_relay(void);
-void init_flasher(void);
-void init_DS18B20(void);
-void init_DHT22(void);
-void init_ceiling_fan(void);
-void init_buzzer(void);
+// PIR motion sensor
+void motion_started(void);
+void motion_stoped(void);
+void detect_motion(void);
+
+
+
+
+
+
+
+
 
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
@@ -129,9 +203,12 @@ void init_buzzer(void);
 
 
 
+
+
 ////////////////////////////////////////////
 // Detection functions
 ////////////////////////////////////////////
+
 
 void detect_DHT22(void){
   // DHT22 sensor
@@ -139,11 +216,11 @@ void detect_DHT22(void){
   int chk = DHT.read22(DHT_pin);
 
   if(chk == DHTLIB_OK){ // detection successful
-    humidity = (float)DHT.humidity;
-    temperature = (float)DHT.temperature;
+    humidity = (int8_t)DHT.humidity;
+    temperature = (int8_t)DHT.temperature;
   }else{ //detection failed
-    humidity = -1000;
-    temperature = -1000;
+    humidity = -127;
+    temperature = -127;
   }
 
   if(DEBUG){
@@ -178,45 +255,90 @@ void detect_DHT22(void){
 }
 
 
-void detect_motion(void) {
-  //state = !state;
-  while(digitalRead(PIR_pin) == HIGH){
-    if (DEBUG) { Serial.println("Motion detected"); }
 
-    // transmit motion notification
-
-    delay(sleep_time); // recheck motion
-
-  }
-
-}
-
-
-uint8_t detect_water_level(void){ // use water level sensor
+void detect_water_level(void){
+  // Measure water level
   liquid_level = (analogRead(water_level_pin) >> 2); //remove LSB to make 8-bit
   if (DEBUG){
     Serial.print("Liquid level: ");
     Serial.println(liquid_level);//prints out liquid level sensor reading
   }
-  return liquid_level;
 }
+
+
+
+void detect_soil_moisture(void){
+  // Measure soil moisture Level
+  soil_moisture = 255 - (analogRead(soil_moisture_pin) >> 2); //remove LSB to make 8-bit;
+  //soil_moisture = adc_read(0);
+  if(DEBUG){
+    Serial.print("Soil Moisture: ");
+    Serial.println(soil_moisture);
+  }
+}
+
 
 
 void detect_DS18B20(void){
-  if (DEBUG){
-    Serial.println("Requesting temperatures...");
-  }
+  if (DEBUG){Serial.println("Requesting temperatures...");}
   sensors.requestTemperatures();
-  temperature = sensors.getTemp(ThermometerAddress);
+
+  //temperature is in degrees Celcius from -64 to +64
+  temperature = sensors.getTemp(ThermometerAddress)>>7;
+
   if(DEBUG){
     Serial.print("Temperature is: ");
     Serial.print(temperature);
-    Serial.print("(Raw): ");
-    Serial.print(temperature/128);
-    Serial.println("C");
+    Serial.print("(int C): ");
+    Serial.print(float(sensors.getTemp(ThermometerAddress))/128);
+    Serial.println("(float C)");
   }
 }
 
+
+
+void motion_started(void){
+  // function preformed when motion is first detected
+  if (DEBUG) { Serial.println("Motion actions started"); }
+}
+void motion_stoped(void){
+  // function preformed when motion is finally stoped
+  if (DEBUG) { Serial.println("Motion actions stoped"); }
+}
+
+void detect_motion(void) {
+  // Total delay is motion_delay*delay_count after motion stops
+  uint16_t motion_delay=500; //ms
+  uint8_t delay_count=30;
+  if(motion_detected){ // function already active, reset count and exit
+    motion_count = 0; //reset count
+    return;
+  }
+  motion_detected = 1;
+  motion_started();
+  while(motion_count <= delay_count){ // ensures a delay before turning off
+    while(digitalRead(PIR_pin)){ // Motion is still being detected
+      if (DEBUG) { Serial.println("Motion detected"); }
+      motion_count = 0; // reset count
+      delay(motion_delay);
+    }
+    if (DEBUG) { Serial.println("Motion stoped, waiting..."); }
+    motion_count++; // increment count
+    delay(motion_delay);
+  }
+  if (DEBUG) { Serial.println("No more motion detected"); }
+  motion_count = 0;
+  motion_detected = 0;
+  motion_stoped();
+}
+
+void detect_light(void){
+  light_level = analogRead(light_pin) >> 2; // inverts and makes it 8-bit
+  if(DEBUG){
+    Serial.print("Light level: ");
+    Serial.println(light_level);
+  }
+}
 
 ////////////////////////////////////////////////
 // Activation functions
@@ -240,69 +362,147 @@ void activate_flasher(void){
 }
 
 
-uint8_t activate_alarm(void){ // Activate alarm
+void activate_alarm(void){ // Activate alarm
   uint8_t beep_count=10;
   uint16_t beep_period=3000;
   uint16_t beep_durration=2000;
-  if(liquid_level > 10){
+  while(liquid_level > 10){
     if (DEBUG){
       Serial.print("Alarm activatied...");
     }
+    alarm = 1;
     for(uint8_t i;i<beep_count;i++){
       tone(buzzer_pin,2400,beep_durration);
       delay(beep_period);
     }
-    return 1;
-  }else{
-    return 0;
+  }
+  alarm = 0;
+}
+
+
+
+
+void control_ceiling_fan(void){
+  // detect temperature
+  detect_DS18B20();
+
+  // ignore unrealistice temperatures
+  if(temperature < -20 || temperature > 50){
+      if(DEBUG){Serial.println("Error: temperature value is unrealistic, no change");}
+      return;
+  }
+  if(DEBUG){
+    Serial.print("Fan status:");
+    Serial.print(ceiling_fan_status);
+    if(ceiling_fan_status == 0x00){
+      if(DEBUG){Serial.println(", off");}
+    }else if(ceiling_fan_status & 0x01){
+      if(DEBUG){Serial.println(", low");}
+    }else if(ceiling_fan_status & 0x02){
+      if(DEBUG){Serial.println(", med");}
+    }else if(ceiling_fan_status & 0x04){
+      if(DEBUG){Serial.println(", high");}
+    }else{
+      Serial.println(", ERROR not valid");
+    }
+  }
+  // Change fan status
+  if(ceiling_fan_status == 0){ // fan is currently off
+      if(temperature >= control_temperature_high){
+        activate_ceiling_fan(4, 0);
+      }else{ if(temperature >= control_temperature_med){
+        activate_ceiling_fan(2, 0);
+      }else{ if(temperature >= (control_temperature_low + control_temperature_hysteresis)){
+        activate_ceiling_fan(1, 0);
+      }}}
+  }else if(ceiling_fan_status == 1){ // fan is currently low
+      if(temperature <= control_temperature_low - control_temperature_hysteresis){
+        activate_ceiling_fan(0, 0); // turning off
+      }else if(temperature >= control_temperature_high){
+        activate_ceiling_fan(4, 0); // turn high
+      }else if(temperature >= control_temperature_med + control_temperature_hysteresis){
+        activate_ceiling_fan(2, 0); // turn med
+      }
+  }else if(ceiling_fan_status == 2){ //fan is currently med
+      if(temperature <= control_temperature_low){
+        activate_ceiling_fan(0, 0); // turn off
+      }else if(temperature <= control_temperature_med - control_temperature_hysteresis){
+        activate_ceiling_fan(1, 0); // turn low
+      }else if(temperature >= control_temperature_high + control_temperature_hysteresis){
+        activate_ceiling_fan(4, 0); // turn high
+      }
+  }else if(ceiling_fan_status == 4){ // fan is currently high
+      if(temperature <= control_temperature_low ){
+        activate_ceiling_fan(0, 0); // turn off
+      }else if(temperature <= control_temperature_med){
+        activate_ceiling_fan(1, 0); // turn low
+      }else if(temperature <= control_temperature_high - control_temperature_hysteresis){
+        activate_ceiling_fan(2, 0); // turn med
+      }
   }
 }
 
 
 
-void activate_ceiling_fan(uint8_t fan, uint8_t light){
-  // exclusive relay activation for fan
+void activate_ceiling_fan(uint8_t fan_change, uint8_t light_change){
+  // exclusive relay activation for fan_change
   // non-exclusive relay activation for light
+  if(DEBUG){
+    Serial.print("Fan state change: ");
+    Serial.print(ceiling_fan_status);
+    Serial.print(" to ");
+    Serial.println(fan_change);
+  }
 
-  if(light){
+  // Light Bulb
+  if(light_change){
     digitalWrite(light_relay_pin, HIGH);
     if(DEBUG){Serial.println("Ceiling light: on");}
   }else{
     digitalWrite(light_relay_pin, LOW);
     if(DEBUG){Serial.println("Ceiling light: off");}
   }
+  ceiling_light_status = light_change; // set global
 
-  if(fan != 0x00 && fan != 0x01 && fan != 0x02 && fan != 0x04){
-    // make sure multiple fan coils are nor powered
+  // Ceiling fan
+  if(fan_change != 0x00 && fan_change != 0x01 && fan_change != 0x02 && fan_change != 0x04){
+    // make sure multiple fan_change coils are nor powered
     if(DEBUG){
-      Serial.print("ERROR: fan var=");
-      Serial.print(fan);
-      Serial.println(": fan relay is not exclusive or is nonsesical, keeping previous settings\n");}
+      Serial.print("ERROR: fan_change var=");
+      Serial.print(fan_change);
+      Serial.println(": fan_change relay is not exclusive or is nonsesical, keeping previous settings\n");
+    }
     return;
   }
-  if(fan & 0x01){
+  // Low speed
+  if(fan_change & 0x01){
     digitalWrite(fan_relay0_pin, HIGH);
-    if(DEBUG){Serial.println("Fan Relay 0: on");}
+    if(DEBUG){Serial.println("Fan Relay 0, low: on");}
   }else{
     digitalWrite(fan_relay0_pin, LOW);
-    if(DEBUG){Serial.println("Fan Relay 0: off");}
+    if(DEBUG){Serial.println("Fan Relay 0, low: off");}
   }
-  if(fan & 0x02){
+  // Med speed
+  if(fan_change & 0x02){
     digitalWrite(fan_relay1_pin, HIGH);
-    if(DEBUG){Serial.println("Fan Relay 1: on");}
+    if(DEBUG){Serial.println("Fan Relay 1, med: on");}
   }else{
     digitalWrite(fan_relay1_pin, LOW);
-    if(DEBUG){Serial.println("Fan Relay 1: off");}
+    if(DEBUG){Serial.println("Fan Relay 1, med: off");}
   }
-  if(fan & 0x04){
+  // High speed
+  if(fan_change & 0x04){
     digitalWrite(fan_relay2_pin, HIGH);
-    if(DEBUG){Serial.println("Fan Relay 2: on");}
+    if(DEBUG){Serial.println("Fan Relay 2, high: on");}
   }else{
     digitalWrite(fan_relay2_pin, LOW);
-    if(DEBUG){Serial.println("Fan Relay 2: off");}
+    if(DEBUG){Serial.println("Fan Relay 2, high: off");}
   }
   if(DEBUG){Serial.println("");}
+
+  ceiling_fan_status = fan_change; //set global
 }
+
 
 
 void activate_relays(uint8_t relays){
@@ -338,11 +538,20 @@ void activate_relays(uint8_t relays){
 }
 
 
+
+
 /////////////////////////////////////////////
 // Other functions
 /////////////////////////////////////////////
 
 void aquire_address(void){
+  // Assign pins
+  pinMode(address0_pin, INPUT_PULLUP);
+  pinMode(address1_pin, INPUT_PULLUP);
+  pinMode(address2_pin, INPUT_PULLUP);
+  pinMode(address3_pin, INPUT_PULLUP);
+
+  // Read pins for address
   address = 0xff;
   address |= digitalRead(address3_pin); // reads into first digit
   address <<= 1; // shifts
@@ -362,6 +571,7 @@ void aquire_address(void){
     Serial.println(address);
   }
 }
+
 
 
 void display_functions(void){
@@ -432,10 +642,7 @@ void load_function_essentials(void){
 	}
 	if(functions & 0x0800){
 		// Ceiling fan
-    pinMode(fan_relay0_pin, OUTPUT);
-    pinMode(fan_relay1_pin, OUTPUT);
-    pinMode(fan_relay2_pin, OUTPUT);
-    pinMode(light_relay_pin, OUTPUT);
+
 	}
 	if(functions & 0x0400){
 		// Relay
@@ -503,28 +710,44 @@ void assign_functions(void){
 }
 
 
+void preform_actions(void){
+  if(address == 0){
+    // sensor location: Bedroom ceiling fan
+
+  }
+}
+
 ////////////////////////////////////////////////
 // Initalize functions
 ////////////////////////////////////////////////
 
-void init_PIR(void) {
-  // PIR input
-  pinMode(PIR_pin, INPUT);
-  // attach to interrupt
-  attachInterrupt(digitalPinToInterrupt(PIR_pin), motion_detected, RISING);
+
+void initialize_functions(void){
+  if(address == 0){
+    // sensor location: Bedroom ceiling fan
+    // Sensors
+    init_DS18B20();
+    // Actions
+    init_ceiling_fan();
+  }
 }
+
+
+void init_PIR(void){
+  pinMode(PIR_pin, INPUT);
+  attachInterrupt(digitalPinToInterrupt(PIR_pin), detect_motion, RISING);
+}
+
 
 
 void init_water_level(void){
-  // pins assignment not needed
-
+  // nothing needed
 }
 void init_light(void){
-  // pins assignment not needed
-
+  // nothing needed
 }
-void init_soil(void){
-  // pins assignment not needed
+void init_soil_moisture(void){
+  // nothing needed
 }
 
 void init_relay(void){
@@ -548,7 +771,7 @@ void init_DS18B20(void){
 }
 
 void init_DHT22(void){
-  // pins
+  // nothing needed
 }
 
 void init_ceiling_fan(void){
@@ -565,6 +788,56 @@ void init_buzzer(void){
   pinMode(buzzer_pin, OUTPUT);
 }
 
+void init_ultrasonic(void){
+  // pin
+  pinMode(ultrasonic_pin, OUTPUT);
+}
+
+void init_LED0(void){
+  // pin
+  pinMode(LED0_pin, OUTPUT);
+}
+
+void init_LED1(void){
+  // pin
+  pinMode(LED1_pin, OUTPUT);
+}
+
+void init_LED2(void){
+  // pin
+  pinMode(LED2_pin, OUTPUT);
+}
+
+void init_LED3(void){
+  // pin
+  pinMode(LED3_pin, OUTPUT);
+}
+
+void init_LED4(void){
+  // pin
+  pinMode(LED4_pin, OUTPUT);
+}
+
+void switch_fan(void) {
+  // pin
+  pinMode(switch_fan_pin, INPUT_PULLUP);
+}
+
+////////////////////////////////////////
+// Sensors
+////////////////////////////////////////
+
+void sensor_main_bedroom_ceiling_fan(void){
+  // Sensors: DS18B20
+  // Actions: ceiling fan(fan, light)
+
+  // Loop 5m{
+  //    Read temperature
+  //    transmit temperature
+
+  // wait for reciever
+  // preform action
+}
 
 
 ////////////////////////////////////////////////////////////////////////
@@ -581,19 +854,13 @@ void setup(void)
     count = 0;
   }
 
-  // Assign pins
-  pinMode(address0_pin, INPUT_PULLUP);
-  pinMode(address1_pin, INPUT_PULLUP);
-  pinMode(address2_pin, INPUT_PULLUP);
-  pinMode(address3_pin, INPUT_PULLUP);
-
   // read address
   aquire_address();
 
   // assign function based on address
-  assign_functions();
-  load_function_essentials();
-
+  init_DS18B20();
+  init_ceiling_fan();
+  init_PIR();
 
 }
 
@@ -612,6 +879,17 @@ void loop(void){
     count++;
   }
 
-  DS18B20_sensor();
+  detect_DHT22();
+  detect_DS18B20();
+  detect_light();
+  detect_soil_moisture();
+  detect_water_level();
+
+  control_ceiling_fan();
+  //activate_relays();
+
+  activate_alarm();
+  activate_flasher();
+
   delay(sleep_time);
 }
