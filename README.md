@@ -5,7 +5,7 @@ this is a sensor network for home automations and sensor data logging
 
 
 
-
+# Code assigned for device locations
 |Node ID |Location					|Abbreviation	|	
 |-------|---------------------------|-------|
 | 0x00	| Crawl Space Front			| CSF	|
@@ -26,6 +26,7 @@ this is a sensor network for home automations and sensor data logging
 | 0x0F	| Garden					| Gard	|
 
 
+# Code assigned for sensor functions
 |Peripheral ID|Function		| Notes		|
 |-----------|---------------|-----------|
 | 0x00		| Temperature	|DS18B20	|
@@ -116,22 +117,34 @@ this is a sensor network for home automations and sensor data logging
 	* _LED4 = LED fan mode, high_
 
 
+# Sensors
 
-* Water level sensor 
+### Bed occupancy sensor
+	* Description: using 4 load cell sensors in a row between the mattress and bed frame.  The cells are set up in a full bridge, creating an output of a sun of each.
+	* Parts
+		* 4x - 50Kg,  Load cell, pressure sensor (Half bridge) https://www.alibaba.com/product-detail/GML692-Strain-Gauge-50kg-Body-Scale_60420080197.html?s=p
+		* Instrumentation Amplifier - INA122 www.ti.com/lit/ds/symlink/ina122.pdf
+		* Op-Amp - LT1013 www.linear.com/docs/3743
+
+### Water level sensor 
   * RB-02S048
   * Vcc = 5V
   * Output: analog
   * pins
   * http://www.learningaboutelectronics.com/Articles/Arduino-liquid-level-sensor-circuit.php
-* Light sensor
+
+
+### Light sensor
 ![alt text](https://github.com/zymos/home_sensor_network/raw/master/schematics/light_sensor_schem.jpg "Light sensor")
+
   * Photoresistor + resistor voltage divider
     * Output: analog
 	* pins
   * Photodiode
     * Output: analog
 	* pins
-* Temperature sensor
+
+### Temperature sensor
 ![alt text](https://github.com/zymos/home_sensor_network/raw/master/schematics/temperature_sensor-DS18B20_schem.jpg "Temp sensor")
   * DS18B20
   * Vcc=5V (3.0-5.5V)
@@ -145,13 +158,15 @@ this is a sensor network for home automations and sensor data logging
   * Output: digital 1-Wire
   * pins
   * https://www.sparkfun.com/datasheets/Sensors/Temperature/DHT22.pdf
-* Motion sensor (PIR)
+
+### Motion sensor (PIR)
 ![alt text](https://github.com/zymos/home_sensor_network/raw/master/schematics/PIR_360_degrees_sensor_schem.jpg "PIR")
   * HC-SR501
   * Vcc=5V (4.8-20V)
   * Output: Digital (3.3V)
   * pins
-* Hygrometer - Soil moisture sensor
+
+### Hygrometer - Soil moisture sensor
 ![alt text](https://github.com/zymos/home_sensor_network/raw/master/schematics/soil_moisture_sensor_schem.jpg "Hygrometer")
   * Sunkee soil hygrometer
   * Vcc=5V (3-5V)
@@ -161,29 +176,32 @@ this is a sensor network for home automations and sensor data logging
 	* -
 	* https://www.openhardware.io/view/65/Bed-Occupancy-Sensor
 
-# Relays
+## Outputs/Control
+
+### Relays
 * 4-bit output
 * pins
-## Light control function
+#### Light control function
 * Single relay for on/off
-## Fan control function
+#### Fan control function
 ![alt text](https://github.com/zymos/home_sensor_network/raw/master/schematics/relay_array-ceilling_fan_schem.jpg "Ceiling fan")
 * Three relays for low/med/high or fan1/fan2/fan3
-## Animal/Pest control function
-### flashing lights
+#### Animal/Pest control function
+##### flashing lights
 * Single relay for on/off
-### ultra sonics
+##### ultra sonics
 * Single relay for on/off
 
 
-# Alarm
+### Alarm
 * 390-0004-Z
 ** Piezo Buzzer, 150Ohm
 ** from a UPS
 ** http:// www.e-gizmo.com/PRODUCT/pdf/buzzers%20and%20speakers.pdf
 
 
-# Node Address
+# Location designations
+## Node Address
 Each address designats a location and assigns the sensors funtion.  This way a common code can be used in all sensors, with differing funtions based on address.
 * 4-bit (16 locations)
 * digitally assigned using jumpers, switches or soldered
@@ -191,9 +209,8 @@ Each address designats a location and assigns the sensors funtion.  This way a c
 * Pins
 
 
-
-
-# RF
+# Communication
+## RF
 ![alt text](https://github.com/zymos/home_sensor_network/raw/master/schematics/RFM69-radio_schem.jpg "RF")
 
 * Transeiver
@@ -256,11 +273,9 @@ Each address designats a location and assigns the sensors funtion.  This way a c
 |Switch(1)		|digital(i)		| Pull-up
 
 
-Shift Reg - 74HC595
+# Microcontroller
 
-
-
-# Arduino MiniPro
+## Arduino MiniPro
 ![alt text](https://github.com/zymos/home_sensor_network/raw/master/schematics/MCU-arduino_pro_mini_schem.jpg "MCU")
 
 ## Pinout
@@ -354,10 +369,11 @@ Shift Reg - 74HC595
 
 * https://blog.adafruit.com/wp-content/uploads/2016/07/promini_final.png
 
-# 3.3V Regulator
+# Power
+## 3.3V Source
 ![alt text](https://github.com/zymos/home_sensor_network/raw/master/schematics/3.3V-Regulator_schem.jpg "3.3V LDO")
 
-# Sensors
+# Device/Units
 
 ### Crawl space sensor 1
 * Location: Front crawl space
